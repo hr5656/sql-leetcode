@@ -32,3 +32,36 @@ with cte as (
     select  "High Salary"
 )
 select cat.category, count(cte.account_id) as accounts_count FROM cat left join cte on cat.category = cte.category group by cat.category
+
+
+-- 262. Trips and Users
+
+with cte as (
+    select T.id, T.client_id, T.driver_id, T.status, T.request_at from Trips as T join Users as A ON T.client_id = A.users_id join Users as B on T.driver_id = B.users_id WHERE
+    A.banned = "No" and B.banned = "No" AND request_at between "2013-10-01" and "2013-10-03"
+), outcome as(
+    select count(*) as c, request_at FROM cte Where status != "completed" Group by request_at 
+), total as (
+   select count(*) as t, request_at FROM cte Group by request_at  
+)
+Select t.request_at as Day ,  coalesce(round(o.c/t.t, 2), 0) as `Cancellation Rate`  From outcome as o right join total as t on o.request_at = t.request_at 
+
+-- 1934. Confirmation Rate
+
+with outcomes as (
+ Select user_id , count(*) as c FROm Confirmations Where action = "confirmed" GROUP BY user_id
+), total as (
+    SELECT S.user_id , T.t as t FROM Signups as S Left join (
+        select user_id , count(*) t from Confirmations group by user_id
+    )as T on S.user_id = T.user_id
+)
+select T.user_id,  coalesce(round(O.c / T.t , 2), 0) as `confirmation_rate` from total as T Left join outcomes as O on T.user_id = O.user_id
+
+
+-- 585. Investments in 2016 — Question Only
+with cte as (
+SELECT DISTINCT a.pid, a.tiv_2016 FROM Insurance as a Join Insurance as b On a.tiv_2015 = b.tiv_2015 and  a.pid != b.pid
+), de as (
+    SELECT pid, count(*) as c From Insurance Group by lat, lon having count(*) = 1
+)
+select round(SUM(cte.tiv_2016), 2) as tiv_2016 From cte Inner Join de ON cte.pid = de.pid 
