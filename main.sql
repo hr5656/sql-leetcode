@@ -13,3 +13,22 @@ SELECT U.name, COALESCE(SUM(r.distance), 0) as travelled_distance FROM Users as 
 
 -- 1393. Capital Gain/Loss
 
+select stock_name, Sum(case when operation = "Buy" then -price else price end) as capital_gain_loss FROM Stocks group by stock_name
+
+-- 1907. Count Salary Categories
+
+# Write your MySQL query statement below
+with cte as (
+  select account_id , case when income < 20000 then "Low Salary" 
+                           when income between 20000 and 50000 then "Average Salary"
+                           else "High Salary" end as category
+                           from Accounts 
+),  cat as
+(
+    SELECT "Low Salary"  as category 
+    union all
+    select "Average Salary"
+    union all
+    select  "High Salary"
+)
+select cat.category, count(cte.account_id) as accounts_count FROM cat left join cte on cat.category = cte.category group by cat.category
