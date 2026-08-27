@@ -65,3 +65,33 @@ SELECT DISTINCT a.pid, a.tiv_2016 FROM Insurance as a Join Insurance as b On a.t
     SELECT pid, count(*) as c From Insurance Group by lat, lon having count(*) = 1
 )
 select round(SUM(cte.tiv_2016), 2) as tiv_2016 From cte Inner Join de ON cte.pid = de.pid 
+
+-- 1050. Actors and Directors Who Cooperated At Least Three Times
+
+SELECT  actor_id , director_id from ActorDirector group by actor_id, director_id having  count(*) >= 3
+
+-- 1148. Article Views I
+
+select distinct author_id as id from Views Where author_id = viewer_id order by  author_id asc
+
+-- 1211. Queries Quality and Percentage
+
+select query_name, round((sum( rating / position ) / count(*)), 2) as quality, round( (sum(case when rating < 3 then 1 else 0 end)/count(*)) * 100  , 2) as poor_query_percentage From Queries group by query_name
+
+
+-- 1179. Reformat Department Table
+
+select id, 
+Min(case when month = "Jan" then revenue end) as Jan_revenue,
+Min(case when month = "Feb" then revenue end) as Feb_revenue,
+Min(case when month = "Mar" then revenue end) as Mar_revenue,
+Min(case when month = "Apr" then revenue end) as Apr_revenue,
+Min(case when month = "May" then revenue end) as May_revenue,
+Min(case when month = "Jun" then revenue end) as Jun_revenue,
+Min(case when month = "Jul" then revenue end) as Jul_revenue,
+Min(case when month = "Aug" then revenue end) as Aug_revenue,
+Min(case when month = "Sep" then revenue end) as Sep_revenue,
+Min(case when month = "Oct" then revenue end) as Oct_revenue,
+Min(case when month = "Nov" then revenue end) as Nov_revenue,
+Min(case when month = "Dec" then revenue end) as Dec_revenue
+ From Department GROUP BY id
